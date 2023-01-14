@@ -234,28 +234,31 @@ def sampleGroupForXdaysNTimes(xdays: int, bookFolderPath: str, newBooks: int, co
         iterations.append(oneIteration)
         nTimes -=1
 
-    graphObj = dobj()
-    graphObj.day = xdays
-    graphObj.totalWordCount = 0
-    graphObj.uniqueWordCount = 0
-    graphObj.averaged = True
     divisor = len(iterations)
+    averagedGraphData =[]
     #now average the data
     print('calculating the average ....')
     counter = 0
     while counter < xdays:
+        graphObj = dobj()
+        graphObj.day = counter +1
+        graphObj.averaged= True
+        graphObj.totalWordCount = 0
+        graphObj.uniqueWordCount = 0
+
         for item in iterations:
             graphObj.totalWordCount += item[counter].totalWordCount
             graphObj.uniqueWordCount += item[counter].uniqueWordCount
 
         graphObj.totalWordCount = math.ceil(graphObj.totalWordCount/divisor)
         graphObj.uniqueWordCount = math.ceil(graphObj.uniqueWordCount/divisor)
-        print("day is: " + str(counter+1) + " avg totalWordCount : " + str(graphObj.totalWordCount) + " avg unique word count : " + str(graphObj.uniqueWordCount))
 
+        print("day is: " + str(counter+1) + " avg totalWordCount : " + str(graphObj.totalWordCount) + " avg unique word count : " + str(graphObj.uniqueWordCount))
+        averagedGraphData.append(graphObj)
         counter +=1
 
 
-    return graphObj
+    return averagedGraphData
 
 
 
