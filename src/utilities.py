@@ -27,8 +27,11 @@ def readTxtData(path: str) -> dobj:
 
             # Read and extract into a set
             for line in file1:
-                word_list_from_line = re.split(r'\s+', line.lower().strip("\n").strip())
-                wordSet.totalWordCount += len(word_list_from_line)
+                #word_list_from_line = re.split(r'\s+', line.lower().strip("\n").strip())
+                #wordSet.totalWordCount += len(word_list_from_line)
+                word_list_from_line = line.translate(str.maketrans('','',string.punctuation))
+                word_list_from_line=word_list_from_line.lower()
+                word_list_from_line=word_list_from_line.split()
                 uniqueWordSet.update(word_list_from_line)
 
         wordSet.uniqueWordCount = len(uniqueWordSet)
