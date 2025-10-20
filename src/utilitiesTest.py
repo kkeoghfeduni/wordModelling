@@ -6,7 +6,55 @@ from dumpObject import dobj
 
 class TestUtilities(unittest.TestCase):
 
-    def test_getAllBookPath(self):
+    # Test for stopList
+    def test_sampling_with_StopList(self):
+        folderPath = os.getcwd() + "\\testFolder"
+        
+        #Create a folder with files
+        os.mkdir(folderPath)
+
+        with open('testFolder/testFile1.txt', 'w') as f:
+            f.write('A happy birthday to you and thank you very much the birthday is always happy and never sad')
+
+        with open('testFolder/testFile2.txt', 'w') as f:
+            f.write('happy new year to you and you are very welcome')
+
+        with open('testFolder/testFile3.txt', 'w') as f:
+            f.write('happy marriage aniversary to you stay good stay fit an never sad')
+
+        stopList = {'a', 'an', 'the'}
+
+        sampledResult = utilities.SampleConversation(utilities.getAllFilePath(folderPath), True, stopList)
+
+        expectedUniqueWordSet = {'happy', 'birthday', 'to', 'you', 'and', 'thank', 'very', 'much', 'is', 'always', 'never', 'sad', 'new', 
+                                 'year', 'are', 'welcome', 'marriage', 'aniversary', 'stay', 'good', 'fit'}
+        expectedTotalWordCount = 40
+        expectedUniqueWordCount = len(expectedUniqueWordSet)
+
+        #Delete the created contents.
+        shutil.rmtree(folderPath)
+
+        self.assertIsNotNone(sampledResult)
+        self.assertEqual(sampledResult.uniqueWordSet, expectedUniqueWordSet)
+        self.assertEqual(sampledResult.totalWordCount, expectedTotalWordCount)
+        self.assertEqual(sampledResult.uniqueWordCount, expectedUniqueWordCount)
+
+    # Test for refining line with lematization true.
+    def test_refineLineWithLemmatization(self):
+        testStr = " I am eating a lot of apples."
+        expectedList = ['i', 'am', 'eating', 'a', 'lot', 'of', 'apple']
+        outputList = utilities.refineLine(testStr, None, True)
+        self.assertEqual(outputList, expectedList)
+
+    # Test for refining line with stemmization true or lematization false.
+    def test_refineLineWithStemmization(self):
+        testStr = " Cats play football but are friend in trouble"
+        expectedList = ['cat', 'play', 'footbal', 'but', 'are', 'friend', 'in', 'troubl']
+        outputList = utilities.refineLine(testStr, None, False)
+        self.assertEqual(outputList, expectedList)
+
+    # Test for getting list of book (.txt file) path from folder path.
+    def test_getAllFilePath(self):
         
         folderPath = os.getcwd() + "\\testFolder"
         
@@ -27,7 +75,7 @@ class TestUtilities(unittest.TestCase):
         unexpectedResult1 = [folderPath+'\\testFile1.txt',
                         folderPath+'\\testFile2.txt',
                         folderPath+'\\testFile3.docs']
-        result = utilities.getAllBookPath(folderPath)
+        result = utilities.getAllFilePath(folderPath)
 
         #Delete the created contents.
         shutil.rmtree(folderPath)
@@ -35,6 +83,7 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(result, expectedResult)
         self.assertNotEqual(result, unexpectedResult1)
 
+    # Test for sampling a conversation
     def test_sampleConversation(self):
 
         folderPath = os.getcwd() + "\\testFolder"
@@ -51,7 +100,7 @@ class TestUtilities(unittest.TestCase):
         with open('testFolder/testFile3.txt', 'w') as f:
             f.write('happy marriage aniversary to you stay good stay fit and never sad')
 
-        sampledResult = utilities.SampleConversation(utilities.getAllBookPath(folderPath))
+        sampledResult = utilities.SampleConversation(utilities.getAllFilePath(folderPath))
 
         expectedUniqueWordSet = {'happy', 'birthday', 'to', 'you', 'and', 'thank', 'very', 'much', 'is', 'always', 'never', 'sad', 'new', 
                                  'year', 'are', 'welcome', 'marriage', 'aniversary', 'stay', 'good', 'fit'}
@@ -66,6 +115,7 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(sampledResult.totalWordCount, expectedTotalWordCount)
         self.assertEqual(sampledResult.uniqueWordCount, expectedUniqueWordCount)
 
+    # Test for reading text data from a file
     def test_readtextData(self):
 
         folderPath = os.getcwd() + "\\testFolder"
@@ -80,8 +130,9 @@ class TestUtilities(unittest.TestCase):
         shutil.rmtree(folderPath)
         
         expectedTotalWordCount = 25
-        expectedwordSet = {'hey','how', 'is', 'it', 'going', 'the', 'summer', 'good', 'i', 'hope', 'you', 'enjoy', 'your',
-                           'time', 'sure', 'will', 'this', 'ok'}
+        expectedwordSet =         {'hey', 'summer', 'going', 'you', 'enjoy', 'the', 'this', 'how', 'hope',
+                                  'i', 'sure', 'your', 'is', 'ok', 'it', 'good', 'time', 'will'}
+
         expectedTotalUniqueWordCount = len(expectedwordSet)
 
         self.assertIsNotNone(sampledData)
@@ -90,6 +141,7 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(sampledData.uniqueWordCount, expectedTotalUniqueWordCount)
         self.assertTrue(sampledData.uniqueWordSet == expectedwordSet)
 
+    # Test for combining two samplings
     def test_sampleTwoSamplings(self):
 
         folderPath = os.getcwd() + "\\testFolder"
@@ -103,7 +155,7 @@ class TestUtilities(unittest.TestCase):
         with open('testFolder/testFile2.txt', 'w') as f:
             f.write('lion zebra apple cat grass zoo')
 
-        result = utilities.getAllBookPath(folderPath)
+        result = utilities.getAllFilePath(folderPath)
 
         sampledData1 = utilities.readTxtData(result[0])
         sampledData2 = utilities.readTxtData(result[1])
